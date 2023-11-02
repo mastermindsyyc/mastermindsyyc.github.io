@@ -1,140 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket System</title>
-     <link rel="stylesheet" href="https://tickets.mastermindsyyc.xyz/styles"> 
-    <style> 
-        /* CSS for the green screen */
-        .success-screen {
-            position: fixed;
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Password Protected Page</title>
+    <style>
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        #dialogText {
+            color: white;
+            background-color: #333333;
+        }
+        
+        #dialogWrap {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: green;
-            opacity: 0;
-            transition: opacity 2s;
-            pointer-events: none;
-            z-index: 9999;
+            display: table;
+            background-color: #EEEEEE;
+        }
+        
+        #dialogWrapCell {
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        #mainDialog {
+            max-width: 400px;
+            margin: 5px;
+            border: solid #AAAAAA 1px;
+            border-radius: 10px;
+            box-shadow: 3px 3px 5px 3px #AAAAAA;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #FFFFFF;
+            overflow: hidden;
+            text-align: left;
+        }
+        #mainDialog > * {
+            padding: 10px 30px;
+        }
+        #passArea {
+            padding: 20px 30px;
+            background-color: white;
+        }
+        #passArea > * {
+            margin: 5px auto;
+        }
+        #pass {
+            width: 100%;
+            height: 40px;
+            font-size: 30px;
+        }
+        
+        #messageWrapper {
+            float: left;
+            vertical-align: middle;
+            line-height: 30px;
+        }
+        
+        .notifyText {
+            display: none;
+        }
+        
+        #invalidPass {
+            color: red;
+        }
+        
+        #success {
+            color: green;
+        }
+        
+        #submitPass {
+            font-size: 20px;
+            border-radius: 5px;
+            background-color: #E7E7E7;
+            border: solid gray 1px;
+            float: right;
+            cursor: pointer;
+        }
+        #contentFrame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #attribution {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+        #attribution, #attribution a {
+            color: #999;
+        }
+        .error {
+            display: none;
+            color: red;
         }
     </style>
-</head>
-<body>
-    <h1>Lookup Ticket</h1>
-  <form id="lookup-form">
-        <label for="ticketId">Ticket ID:</label>
-        <input type="text" id="ticketId" name="ticketId" required>
-        <button type="submit">Lookup</button>
-    </form>
-    <div id="ticket-result"></div>
-
-    <h1>Admin Setup</h1>
-    <!-- Admin Setup Form -->
-    <form id="admin-setup-form">
-        <label for="date">Select Date:</label><br>
-        <input type="radio" id="date1" name="date" value="2024-5-15" required>
-        <label for="date1">May 15th</label><br>
-        <input type="radio" id="date2" name="date" value="2024-5-16" required>
-        <label for="date2">May 16th</label><br>
-        <label for="email">Email:</label>
-        <input type="text" id="email" name="email" required>
-
-        <!-- Use type="number" for the amount input -->
-        <label for="amount">Ticket Amount:</label>
-        <input type="number" id="amount" name="amount" min="1" required>
-
-        <button type="submit">Setup Ticket</button>
-    </form>
-    
-    <div id="success-screen" class="success-screen"></div>
-
-    <div id="admin-setup-result"></div>
-
+  </head>
+  <body>
+    <iframe id="contentFrame" frameBorder="0" allowfullscreen></iframe>
+    <div id="dialogWrap">
+        <div id="dialogWrapCell">
+            <div id="mainDialog">
+                <div id="dialogText">This page is password protected.</div>
+                <div id="passArea">
+                    <p id="passwordPrompt">Password</p>
+                    <input id="pass" type="password" name="pass" autofocus>
+                    <div>
+                        <span id="messageWrapper">
+                            <span id="invalidPass" class="error">Sorry, please try again.</span>
+                            <span id="trycatcherror" class="error">Sorry, something went wrong.</span>
+                            <span id="success" class="notifyText">Success!</span>
+                            &nbsp;
+                        </span>
+                        <button id="submitPass" type="button">Submit</button>
+                        <div style="clear: both;"></div>
+                    </div>
+                </div>
+                <div id="securecontext" class="error">
+                    <p>
+                        Sorry, but password protection only works over a secure connection. Please load this page via HTTPS.
+                    </p>
+                </div>
+                <div id="nocrypto" class="error">
+                    <p>
+                        Your web browser appears to be outdated. Please visit this page using a modern browser.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="attribution">
+        Protected by <a href="https://www.maxlaumeister.com/pagecrypt/">PageCrypt</a>
+    </div>
     <script>
-        const lookupForm = document.getElementById('lookup-form');
-        const ticketIdInput = document.getElementById('ticketId');
-        const ticketResult = document.getElementById('ticket-result');
+    (function() {
 
-        const adminSetupForm = document.getElementById('admin-setup-form');
-        const emailInput = document.getElementById('email');
-        const amountInput = document.getElementById('amount'); // Get the ticket amount input
-        const adminSetupResult = document.getElementById('admin-setup-result');
-        const successScreen = document.getElementById('success-screen');
+        var pl = "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";
+        
+        var submitPass = document.getElementById('submitPass');
+        var passEl = document.getElementById('pass');
+        var invalidPassEl = document.getElementById('invalidPass');
+        var trycatcherror = document.getElementById('trycatcherror');
+        var successEl = document.getElementById('success');
+        var contentFrame = document.getElementById('contentFrame');
+        
+        // Sanity checks
 
-        lookupForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const ticketId = ticketIdInput.value;
-            const response = await fetch(`https://tickets.mastermindsyyc.xyz/api/ticket/${ticketId}`);
-            const data = await response.json();
-            if (response.ok) {
-                ticketResult.innerHTML = `<p>Ticket ID: ${data.id}</p><p>Date: ${data.date}</p><p>Email: ${data.email}</p><p>Livestream URL: ${data.livestreamurl}</p>`;
-            } else {
-                ticketResult.innerHTML = `<p>${data.error}</p>`;
+        if (pl === "") {
+            submitPass.disabled = true;
+            passEl.disabled = true;
+            alert("This page is meant to be used with the encryption tool. It doesn't work standalone.");
+            return;
+        }
+
+        if (!isSecureContext) {
+            document.querySelector("#passArea").style.display = "none";
+            document.querySelector("#securecontext").style.display = "block";
+            return;
+        }
+
+        if (!crypto.subtle) {
+            document.querySelector("#passArea").style.display = "none";
+            document.querySelector("#nocrypto").style.display = "block";
+            return;
+        }
+        
+        function str2ab(str) {
+            var ustr = atob(str);
+            var buf = new ArrayBuffer(ustr.length);
+            var bufView = new Uint8Array(buf);
+            for (var i=0, strLen=ustr.length; i < strLen; i++) {
+                bufView[i] = ustr.charCodeAt(i);
             }
-        });
+            return bufView;
+        }
 
-                adminSetupForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const selectedDate = document.querySelector('input[name="date"]:checked');
-            const date = selectedDate ? selectedDate.value : '';
-            const email = emailInput.value;
-            const amount = parseInt(amountInput.value, 10);
+        async function deriveKey(salt, password) {
+            const encoder = new TextEncoder()
+            const baseKey = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(password),
+                'PBKDF2',
+                false,
+                ['deriveKey'],
+            )
+            return await crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+                baseKey,
+                { name: 'AES-GCM', length: 256 },
+                true,
+                ['decrypt'],
+            )
+        }
+        
+        async function doSubmit(evt) {
+            submitPass.disabled = true;
+            passEl.disabled = true;
 
-            const response = await fetch('https://tickets.mastermindsyyc.xyz/api/registershow', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ date, email, amount }),
-            });
+            let iv, ciphertext, key;
+            
+            try {
+                var unencodedPl = str2ab(pl);
 
-            const data = await response.json();
-            if (response.ok) {
-                // Show the green success screen
-                const successScreen = document.getElementById('success-screen');
-                successScreen.style.opacity = '1';
-                successScreen.style.pointerEvents = 'auto';
+                const salt = unencodedPl.slice(0, 32)
+                iv = unencodedPl.slice(32, 32 + 16)
+                ciphertext = unencodedPl.slice(32 + 16)
 
-                // Reload the page after a delay
-                setTimeout(() => {
-                    location.reload();
-                }, 2000); // Adjust the delay as needed (2 seconds in this example)
-            } else {
-                adminSetupResult.innerHTML = `<p>${data.error}</p>`;
+                key = await deriveKey(salt, passEl.value);
+            } catch (e) {
+                trycatcherror.style.display = "inline";
+                console.error(e);
+                return;
             }
-        });
-        const giftTicketForm = document.getElementById('gift-ticket-form');
-const recipientEmailInput = document.getElementById('recipientEmail');
-const senderNameInput = document.getElementById('senderName');
-const giftMessageInput = document.getElementById('giftMessage');
-const ticketAmountInput = document.getElementById('ticketAmount'); // Get the ticket amount input for gift
 
-giftTicketForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const recipientEmail = recipientEmailInput.value;
-    const senderName = senderNameInput.value;
-    const giftMessage = giftMessageInput.value;
-    const ticketAmount = parseInt(ticketAmountInput.value, 10); // Parse the ticket amount as an integer
+            try {
+                const decryptedArray = new Uint8Array(
+                    await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext)
+                );
 
-    // Send a POST request to the server for gift ticket registration
-    const response = await fetch('/api/giftticket', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ recipientEmail, senderName, giftMessage, ticketAmount }), // Include recipient email, sender name, gift message, and ticket amount
-    });
+                let decrypted = new TextDecoder().decode(decryptedArray);
 
-    const data = await response.json();
-    if (response.ok) {
-        // Display a success message or perform any other desired action
-        console.log(data.message);
-    } else {
-        // Display an error message or handle errors as needed
-        console.error(data.error);
-    }
-});
+                if (decrypted === "") throw "No data returned";
+
+                const basestr = '<base href="." target="_top">';
+                const anchorfixstr = `
+                    <script>
+                        Array.from(document.links).forEach((anchor) => {
+                            const href = anchor.getAttribute("href");
+                            if (href.startsWith("#")) {
+                                anchor.addEventListener("click", function(e) {
+                                    e.preventDefault();
+                                    const targetId = this.getAttribute("href").substring(1);
+                                    const targetEl = document.getElementById(targetId);
+                                    targetEl.scrollIntoView();
+                                });
+                            }
+                        });
+                    <\/script>
+                `;
+                
+                // Set default iframe link targets to _top so all links break out of the iframe
+                if (decrypted.includes("<head>")) decrypted = decrypted.replace("<head>", "<head>" + basestr);
+                else if (decrypted.includes("<!DOCTYPE html>")) decrypted = decrypted.replace("<!DOCTYPE html>", "<!DOCTYPE html>" + basestr);
+                else decrypted = basestr + decrypted;
+
+                // Fix fragment links
+                if (decrypted.includes("</body>")) decrypted = decrypted.replace("</body>", anchorfixstr + '</body>');
+                else if (decrypted.includes("</html>")) decrypted = decrypted.replace("</html>", anchorfixstr + '</html>');
+                else decrypted = decrypted + anchorfixstr;
+                
+                contentFrame.srcdoc = decrypted;
+                
+                successEl.style.display = "inline";
+                setTimeout(function() {
+                    dialogWrap.style.display = "none";
+                }, 1000);
+            } catch (e) {
+                invalidPassEl.style.display = "inline";
+                passEl.value = "";
+                submitPass.disabled = false;
+                passEl.disabled = false;
+                console.error(e);
+                return;
+            }
+        }
+        
+        submitPass.onclick = doSubmit;
+        passEl.onkeypress = function(e){
+            if (!e) e = window.event;
+            var keyCode = e.keyCode || e.which;
+            invalidPassEl.style.display = "none";
+            if (keyCode == '13'){
+              // Enter pressed
+              doSubmit();
+              return false;
+            }
+        }
+    })();
     </script>
-</body>
+  </body>
+</html>
