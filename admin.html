@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - MASTERMINDS</title>
+    <style>
+        /* Add your CSS styles for the website here */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #222, #111);
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        header {
+            background: #000000;
+            text-align: center;
+            padding: 40px; /* Increase the padding to make the title fully visible */
+        }
+
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+        }
+
+        .hero-image {
+            width: 50px; /* Reduce the size of the logo */
+            max-height: 50px;
+            object-fit: cover;
+        }
+
+        nav {
+            background: #333;
+            text-align: center;
+            padding: 10px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+        }
+
+        .admin-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .admin-links a {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 10px 20px; /* Increased margin for more spacing */
+        }
+
+        .admin-links a:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Your logo here -->
+        <img src="https://github.com/gmanandmarbles2/livestream-ticket-system/blob/main/logo.png?raw=true" alt="Masterminds Logo" class="hero-image">
+        <h1>Admin Panel - MASTERMINDS</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="credits.html">Credits</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-links">
+        <a href="#">Manage Users</a>
+        <br><br><br>
+        <a href="#">Edit Content</a>
+        <br><br><br>
+        <a href="#">Generate Reports</a>
+        <br><br><br>
+        <a href="#">Settings</a>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 Masterminds Drama Play</p>
+    </footer>
+</body>
+</html>
