@@ -77,6 +77,34 @@
         .tickets button:hover {
             background: #d32f2f;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #333;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .close {
+            float: right;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #f44336;
+        }
 
         .dates {
             text-align: center;
@@ -147,8 +175,32 @@
         <h2>Tickets</h2>
         <div class="tickets">
             <p>General Admission - $5 each</p>
+            <p>Livestream - $10 each</p>
             <button>Get Your Tickets Now!</button>
         </div>
+        <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <p>Request tickets for Masterminds. Please note that all information in this form will be passed onto a representative of Masterminds, who should contact you within 48-72 hours. Please note that this is only applicable on weekdays. If you have not heard back within a week please fill out this form again. Or call us at <a href="tel:8258000100"> (825)-800-0100<a/></p>
+    <form action="https://tickets.mastermindsyyc.xyz/purchase" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required><br>
+
+        <h2>Ticket Pricing</h2>
+        <label for="standardTickets">Tickets:</label>
+        <input type="number" id="standardTickets" name="standardTickets" value="0"><br>
+
+        
+        <button type="submit">Request Tickets</button>
+    </form>
+        </div>
+    </div>
 
         <h2>Performance Dates</h2>
         <p class="dates">May 13th to May 17th, 2024</p>
@@ -165,5 +217,25 @@
     <footer>
         <p>&copy; 2023 Masterminds Drama Play</p>
     </footer>
+    <script>
+        const ticketButton = document.querySelector(".tickets button");
+        const ticketModal = document.getElementById("ticketModal");
+        const closeModal = document.getElementById("closeModal");
+
+        ticketButton.addEventListener("click", () => {
+            ticketModal.style.display = "block";
+        });
+
+        closeModal.addEventListener("click", () => {
+            ticketModal.style.display = "none";
+        });
+
+        window.addEventListener("click", (event) => {
+            if (event.target === ticketModal) {
+                ticketModal.style.display = "none";
+            }
+        });
+    </script>
+    
 </body>
 </html>
